@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_project_root"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <ImageView
+            android:id="@+id/item_project_color"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="25dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:alpha="1"
+            android:background="@drawable/group_icon_background"/>
+
+        <TextView
+            android:id="@+id/item_project_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            tools:text="Project Name"/>
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+</LinearLayout>

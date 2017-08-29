@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_text_view"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:padding="15dp"
+    tools:text="Menu Name"
+    android:textSize="18sp" />

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#fff"
+    android:layout_width="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/project_editor_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:textCursorDrawable="@drawable/black_cursor"
+        android:layout_alignParentTop="true"
+        android:padding="20dp"
+        android:elevation="2dp"
+        android:hint="project name"/>
+    <View style="@style/Divider" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/project_editor_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/project_editor_text"
+        android:layout_above="@+id/action_save_edit_project" />
+
+    <View
+        android:id="@+id/bottom_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_above="@id/action_create_project"
+        android:background="@drawable/bottom_shadow" />
+
+    <TextView
+        android:id="@+id/action_save_edit_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:textColor="#304FFE"
+        android:textSize="15sp"
+        android:padding="20dp"
+        android:textAlignment="center"
+        android:text="Save"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

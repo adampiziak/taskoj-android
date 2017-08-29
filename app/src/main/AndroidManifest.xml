@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.adampiziak.bloktree">
+
+    <application
+        android:name=".Taskoj"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_taskoj"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".Activities.ActMain">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activities.ActTaskCreator"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Activities.ActProjectPicker"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Activities.ActProjectCreator"
+            android:windowSoftInputMode="stateUnchanged" />
+        <activity android:name=".Activities.ActSettings" />
+        <activity
+            android:name=".Activities.ActTaskEditor"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Activities.ActProjectEditor"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".Activities.ActGroupFullscreen" />
+        <activity android:name=".Activities.ActDurationPicker" />
+        <activity android:name=".Activities.ActActiveTask" />
+        <activity android:name=".Activities.ActEventCreator" />
+        <activity android:name=".Activities.ActEventEditor" />
+        <activity android:name=".Activities.LanguagePicker" />
+        <activity android:name=".Activities.RenewPicker"></activity>
+        <activity android:name=".Activities.ActZoneCreator" />
+        <activity android:name=".Activities.ActColorPicker" />
+    </application>
+
+</manifest>

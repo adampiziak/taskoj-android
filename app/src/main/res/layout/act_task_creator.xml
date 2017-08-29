@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/task_creator_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/task_creator_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="#546E7A"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/task_creator_app_bar_cancel"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="17dp"
+                    android:padding="17dp"
+                    android:layout_gravity="left|top"
+                    android:background="@drawable/ic_clear_white_48px"
+                    />
+                <TextView
+                    android:id="@+id/a_task_creator_action_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:padding="10dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:textColor="#fff"
+                    android:text="CREATE"/>
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="left|center"
+                    android:textColor="#fff"
+                    android:textCursorDrawable="@drawable/white_cursor"
+                    android:hint="Task name"
+                    android:inputType="textCapSentences"
+                    android:background="@android:color/transparent"
+                    android:textColorHint="#fff"
+                    android:id="@+id/activity_task_creator_toolbar_task_name"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.Toolbar>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:background="#F5F5F5"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    <LinearLayout
+        android:id="@+id/creator_task_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginTop="12dp"
+            android:text="Options"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/creator_task_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:elevation="2dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/creator_field_project"
+                style="@style/TaskCreatorOption"
+                android:transitionName="groupSelectorBar">
+
+                <ImageView
+                    android:id="@+id/group_field_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_bubble_chart_black_24px"
+                    android:transitionName="groupSelectorIcon" />
+
+                <TextView
+                    android:id="@+id/project_field_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Set project"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <View style="@style/Divider" />
+
+            <LinearLayout
+                android:id="@+id/activity_task_creator_priority"
+                style="@style/TaskCreatorOption">
+
+                <ImageView
+                    android:id="@+id/activity_task_creator_priority_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_flag_black_24px" />android:height="10dp"
+
+                <TextView
+                    android:id="@+id/activity_task_creator_priority_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Set priority"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <View style="@style/Divider" />
+            <LinearLayout
+                android:id="@+id/activity_task_creator_date"
+                style="@style/TaskCreatorOption">
+
+                <ImageView
+                    android:id="@+id/activity_task_creator_date_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_event_black_24px" />
+
+                <TextView
+                    android:id="@+id/activity_task_creator_date_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="5"
+                    android:background="@android:color/transparent"
+                    android:hint="Set due date"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <View style="@style/Divider" />
+            <LinearLayout
+                android:id="@+id/activity_task_creator_duration"
+                style="@style/TaskCreatorOption">
+
+                <ImageView
+                    android:id="@+id/activity_task_creator_duration_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_timelapse_black_24px" />
+
+                <TextView
+                    android:id="@+id/activity_task_creator_duration_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Add duration"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+
+
+
+            <View style="@style/Divider" />
+
+            <LinearLayout
+                android:id="@+id/activity_task_creator_repeat"
+                style="@style/TaskCreatorOption">
+
+                <ImageView
+                    android:id="@+id/activity_task_creator_repeat_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_autorenew_black_24px" />
+
+                <TextView
+                    android:id="@+id/activity_task_creator_repeat_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Make task repeatable"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <View style="@style/Divider" />
+
+            <LinearLayout
+                android:id="@+id/activity_task_creator_notification"
+                style="@style/TaskCreatorOption">
+
+                <ImageView
+                    android:id="@+id/activity_task_creator_notification_icon"
+                    style="@style/TaskCreatorOptionIcon"
+                    android:background="@drawable/ic_notifications_black_24px" />
+
+                <TextView
+                    android:id="@+id/activity_task_creator_notification_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Add a notification"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginTop="12dp"
+            android:text="Subtasks"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:elevation="2dp"
+            android:orientation="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/task_creator_subtask_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:enabled="false"
+                    android:layout_marginLeft="10dp"/>
+                <EditText
+                    android:id="@+id/task_creator_subtask_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="0dp"
+                    android:paddingBottom="20dp"
+                    android:paddingTop="20dp"
+                    android:background="@android:color/transparent"
+                    android:textCursorDrawable="@drawable/black_cursor"
+                    android:hint="Subtask"
+                    android:inputType="textCapSentences"
+                    android:textSize="16sp"
+                    android:alpha="0.6"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+
+
+</LinearLayout>

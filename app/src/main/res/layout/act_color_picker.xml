@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/act_color_picker_blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#3D5AFE"
+        android:textColor="@color/white"
+        android:text="blue"/>
+    <Button
+        android:id="@+id/act_color_picker_red"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#f44336"
+        android:textColor="@color/white"
+        android:text="red"/>
+</LinearLayout>

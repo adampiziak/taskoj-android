@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_item_tasks"
+        android:icon="@drawable/ic_done_all_black_24px"
+        android:title="Tasks"/>
+    <item
+        android:id="@+id/nav_item_projects"
+        android:icon="@drawable/ic_bubble_chart_black_24px"
+        android:title="Projects"/>
+
+    <item android:title="Calendar">
+        <menu>
+            <item
+                android:id="@+id/nav_item_schedule"
+                android:title="Schedule"
+                android:icon="@drawable/ic_view_agenda_black_24px" />
+            <item
+                android:id="@+id/nav_item_zones"
+                android:title="Zones"
+                android:icon="@drawable/ic_zone" />
+        </menu>
+    </item>
+</menu>

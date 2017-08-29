@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+        <EditText
+            android:id="@+id/task_name_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TASK_NAME_PLACEHOLDER"
+            android:hint="task name"
+            android:padding="20dp"
+            android:textColor="#616161"
+            android:elevation="2dp"
+            android:imeOptions="actionNone"
+            android:background="@color/white"/>
+        <LinearLayout
+            android:id="@+id/act_task_editor_priority"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_priority_title"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/act_task_editor_priority_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:gravity="right"
+                android:text="normal"/>
+        </LinearLayout>
+        <View style="@style/Divider" />
+        <LinearLayout
+            android:id="@+id/task_edit_proj"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Project"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/task_edit_proj_text"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_marginEnd="20dp"
+                android:layout_height="wrap_content"
+                android:text="general"/>
+        </LinearLayout>
+        <View style="@style/Divider" />
+        <LinearLayout
+            android:id="@+id/task_edit_repeat"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Repeat"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/task_edit_repeat_text"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_marginEnd="20dp"
+                android:layout_height="wrap_content"
+                android:text="Do no repeat"/>
+        </LinearLayout>
+        <View style="@style/Divider" />
+        <Button
+            android:id="@+id/act_task_editor_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#f44336"
+            android:textColor="@color/white"
+            android:padding="20dp"
+            android:text="DELETE task"/>
+
+    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/task_edit_fab"
+        android:layout_height="56dp"
+        android:layout_width="56dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="25dp"
+        android:src="@drawable/ic_done_white_48px"
+        android:scaleType="center"
+        android:elevation="6dp"
+        app:backgroundTint="#448AFF" />
+</RelativeLayout>
