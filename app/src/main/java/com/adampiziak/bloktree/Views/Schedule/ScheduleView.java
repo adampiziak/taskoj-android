@@ -481,6 +481,7 @@ public class ScheduleView extends ViewGroup {
             int eventDayOfWeek = eventDate.get(Calendar.DAY_OF_WEEK);
             //Log.d(TAG, "EVENT_DAY_OF_WEEK " + eventDayOfWeek);
 
+            //test git
             //Check is event is on this day of week
             boolean weekly = event.getRenewType() == 1;
             boolean sameDayOfWeek = event.getRenewDays().charAt((dayOfWeek-1)) == '1';
