@@ -58,6 +58,7 @@ public class Tools {
         event.setDuration((long) snap.child("duration").getValue());
         event.setProjectKey(snap.child("projectKey").getValue().toString());
         event.setRenewType((snap.child("renewType").getValue() != null) ? (long) snap.child("renewType").getValue() : -1);
+        event.setRenewDays(snap.child("renewDays").getValue().toString());
         return event;
     }
 

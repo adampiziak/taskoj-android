@@ -14,6 +14,7 @@ public class Event {
     private long minute = 0;
     private long duration = 60;
     private long renewType = -1;
+    private String renewDays = "0000000";
 
 
 
@@ -81,6 +82,13 @@ public class Event {
         this.renewType = renewType;
     }
 
+    public String getRenewDays() {
+        return renewDays;
+    }
+
+    public void setRenewDays(String renewDays) {
+        this.renewDays = renewDays;
+    }
 
     @Exclude
     public RectF container = new RectF();

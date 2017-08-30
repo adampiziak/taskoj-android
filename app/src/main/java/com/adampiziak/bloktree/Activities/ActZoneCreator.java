@@ -3,11 +3,11 @@ package com.adampiziak.bloktree.Activities;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.adampiziak.bloktree.DialogTimeEnum;
-import com.adampiziak.bloktree.Project;
 import com.adampiziak.bloktree.R;
 import com.adampiziak.bloktree.Zone;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 
 public class ActZoneCreator extends AppCompatActivity implements View.OnClickListener {
+    //debug
+    final private String TAG = "ACT_ZONE_CREATOR";
 
     private final int REQUEST_COLOR = 142;
     private final int REQUEST_RENEW = 134;
@@ -36,7 +37,7 @@ public class ActZoneCreator extends AppCompatActivity implements View.OnClickLis
     boolean exclude = false;
     long startTime = 0;
     long endTime = 0;
-    int renew = -1;
+    int renewType = -1;
 
     //Views
     LinearLayout fieldColor;
@@ -77,8 +78,10 @@ public class ActZoneCreator extends AppCompatActivity implements View.OnClickLis
 
     private void createZone() {
         name = inputName.getText().toString();
-        Zone zone = new Zone(name, color, startTime, endTime, renew);
+        Log.d(TAG, "createZone: " + renewType);
+        Zone zone = new Zone(name, color, startTime, endTime, renewType);
         ref.child("zones").child(auth.getCurrentUser().getUid()).push().setValue(zone);
+        finish();
     }
 
     private void init() {
@@ -119,7 +122,6 @@ public class ActZoneCreator extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.act_zone_creator_action_create:
                 createZone();
-                finish();
                 break;
             case R.id.act_zone_creator_field_renew:
                 Intent renewPicker = new Intent(this, RenewPicker.class);
@@ -141,7 +143,8 @@ public class ActZoneCreator extends AppCompatActivity implements View.OnClickLis
                     fieldColor.setBackgroundColor(colorHex);
                     break;
                 case REQUEST_RENEW:
-                    int renew = data.getIntExtra("RENEW_TYPE", -1);
+                    renewType = data.getIntExtra("RENEW_TYPE", -1);
+                    Log.d(TAG, "onActivityResult: " + renewType);
                     break;
             }
         }

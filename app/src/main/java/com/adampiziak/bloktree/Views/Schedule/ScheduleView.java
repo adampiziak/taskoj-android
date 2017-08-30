@@ -163,7 +163,7 @@ public class ScheduleView extends ViewGroup {
     }
 
     private void drawZones(Canvas canvas) {
-        int strokeWidthDp = 1;
+        float strokeWidthDp = 1.5f;
 
         //set paint instances
         Paint rectPaint = new Paint();
@@ -185,8 +185,9 @@ public class ScheduleView extends ViewGroup {
             //Set Color
             int color = Color.parseColor(zone.getColor());
             rectPaint.setColor(color);
+            rectPaint.setAlpha(40);
             line.setColor(color);
-            line.setAlpha(50);
+            line.setAlpha(30);
             fillPaint.setColor(color);
 
             //Get times
@@ -198,7 +199,7 @@ public class ScheduleView extends ViewGroup {
             int hourEnd = end.get(Calendar.HOUR_OF_DAY);
             int duration = hourEnd - hourStart;
             float height = duration*hourHeight;
-            float separation = dpToPx(14);
+            float separation = dpToPx(10);
             float remainder = width - height;
             if (remainder < 0) remainder *= -1;
             if (width > height) {
@@ -209,7 +210,7 @@ public class ScheduleView extends ViewGroup {
                     canvas.drawLine(eventContainerLeft+separation*i, rootPadding + hourStart*hourHeight + height, eventContainerLeft + (width - remainder) + (separation*i), rootPadding + hourStart*hourHeight, line);
                 }
 
-                for (int i = 1; i <= Math.floor((height)/separation); i++) {
+                for (int i = 0; i <= Math.floor((height)/separation); i++) {
                     canvas.drawLine(eventContainerLeft+remainder+separation*i, rootPadding+height+hourStart*hourHeight, rootWidth-rootPadding, rootPadding+hourStart*hourHeight + separation*i, line);
                 }
             } else {
@@ -219,7 +220,7 @@ public class ScheduleView extends ViewGroup {
                 for (int i = 1; i <= Math.floor(remainder/separation); i++) {
                     canvas.drawLine(eventContainerLeft, rootPadding + hourStart*hourHeight + (height-remainder) + separation*i, rootWidth-rootPadding, rootPadding + hourStart*hourHeight + separation*i, line);
                 }
-                for (int i = 1; i <= Math.floor((width)/separation); i++) {
+                for (int i = 0; i <= Math.floor((width)/separation); i++) {
                     canvas.drawLine(eventContainerLeft+separation*i, rootPadding+height+hourStart*hourHeight, rootWidth-rootPadding, rootPadding+hourHeight*hourStart + remainder + separation*i, line);
                 }
 
@@ -432,6 +433,8 @@ public class ScheduleView extends ViewGroup {
                     zones.add(zone);
                     Log.d(TAG, "ADDED ZONE");
                 }
+                if (zone.getRenewType() == 0)
+                    zones.add(zone );
 
             }
 
@@ -477,7 +480,13 @@ public class ScheduleView extends ViewGroup {
             eventDate.set(Calendar.DAY_OF_MONTH , (int) event.getDay());
             int eventDayOfWeek = eventDate.get(Calendar.DAY_OF_WEEK);
             //Log.d(TAG, "EVENT_DAY_OF_WEEK " + eventDayOfWeek);
-            if (eventIsToday || event.getRenewType() == 0 || (event.getRenewType() == 1 && eventDayOfWeek == dayOfWeek)) {
+
+            //Check is event is on this day of week
+            boolean weekly = event.getRenewType() == 1;
+            boolean sameDayOfWeek = event.getRenewDays().charAt((dayOfWeek-1)) == '1';
+            Log.d(TAG, "same day of week" + sameDayOfWeek);
+
+            if (eventIsToday || event.getRenewType() == 0 || (weekly && sameDayOfWeek)) {
                 Project project = getProject(event.getProjectKey());
                 EventView eventView = new EventView(getContext(), event, project);
                 eventsToday.add(event);

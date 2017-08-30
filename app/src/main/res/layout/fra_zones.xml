@@ -15,6 +15,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="30dp"
+        android:backgroundTint="#536DFE"
         android:src="@drawable/ic_add_white_48px"/>
 
 </RelativeLayout>

@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.view.ViewPager
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fra_schedule_view_pager"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v4.view.ViewPager
+
+        android:id="@+id/fra_schedule_view_pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fra_schedule_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="#536DFE"
+        android:src="@drawable/ic_add_white_48px"/>
+</RelativeLayout>

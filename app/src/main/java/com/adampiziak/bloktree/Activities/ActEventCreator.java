@@ -50,6 +50,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
     int endHour = 0;
     int endMinute = 0;
     int renewType = -1;
+    String renewDays = "0000000";
 
     //Database
     DatabaseReference ref;
@@ -126,6 +127,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     break;
                 case REQUEST_RENEW_TYPE:
                     this.renewType = data.getIntExtra("RENEW_TYPE", -1);
+                    this.renewDays = data.getStringExtra("RENEW_DAYS");
                     switch (renewType) {
                         case -1:
                             textRenew.setText("Do not repeat");
@@ -165,6 +167,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                 event.setMinute(minute);
                 event.setProjectKey(projectKey);
                 event.setRenewType(renewType);
+                event.setRenewDays(renewDays);
                 ref.child("events").child(auth.getCurrentUser().getUid()).push().setValue(event);
                 finish();
                 break;
