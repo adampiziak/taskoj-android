@@ -383,10 +383,15 @@ public class ScheduleView extends ViewGroup {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Event event = Tools.createEventFromSnapshot(dataSnapshot);
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(event.getTimeStart());
+                int startHour = cal.get(Calendar.HOUR_OF_DAY);
+                int startMinute = cal.get(Calendar.MINUTE);
+                float duration = (float) (event.getTimeEnd() - event.getTimeStart()) / (60f * 60f * 1000f);
                 event.container = new RectF(eventContainerLeft,
-                        (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + rootPadding,
+                        (float) startHour * hourHeight + ((float) startMinute/60)*hourHeight + rootPadding,
                         rootWidth - rootPadding,
-                        (float) event.getHour() * hourHeight + rootPadding + ((float) event.getDuration() / 60)*hourHeight);
+                        (float) startHour * hourHeight + ((float) startMinute/60)*hourHeight + rootPadding + duration*hourHeight);
 
                 events.add(event);
                 filterEvents();
@@ -463,31 +468,19 @@ public class ScheduleView extends ViewGroup {
 
     void filterEvents() {
         eventsToday = new ArrayList<>();
-        Calendar c = Calendar.getInstance();
-        int currentMonth = c.get(Calendar.MONTH);
-        int currentDay = c.get(Calendar.DAY_OF_MONTH) + dayOffset;
-        int currentYear = c.get(Calendar.YEAR);
-        c.add(Calendar.DAY_OF_MONTH, dayOffset);
-        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        //Log.d(TAG, "DAY_OF_WEEK_TODAY " + dayOfWeek);
+        Calendar now = Calendar.getInstance();
+        Calendar pageDate = now; //initialize to current time
+        pageDate.add(Calendar.DAY_OF_MONTH, dayOffset); //add offset
+
+        int pageWeekDay = pageDate.get(Calendar.DAY_OF_WEEK);
         for (Event event : events) {
-            boolean eventIsToday = event.getDay() == currentDay
-                    && event.getMonth() == currentMonth
-                    && event.getYear() == currentYear;
             Calendar eventDate = Calendar.getInstance();
-            eventDate.set(Calendar.YEAR, (int) event.getYear());
-            eventDate.set(Calendar.MONTH, (int) event.getMonth());
-            eventDate.set(Calendar.DAY_OF_MONTH , (int) event.getDay());
-            int eventDayOfWeek = eventDate.get(Calendar.DAY_OF_WEEK);
-            //Log.d(TAG, "EVENT_DAY_OF_WEEK " + eventDayOfWeek);
+            eventDate.setTimeInMillis(event.getTimeStart());
+            boolean sameDayOfWeek = false;
+            if (event.getRenewType() == 1)
+                sameDayOfWeek = isOnSameWeekDay(pageWeekDay, event);
 
-            //test git
-            //Check is event is on this day of week
-            boolean weekly = event.getRenewType() == 1;
-            boolean sameDayOfWeek = event.getRenewDays().charAt((dayOfWeek-1)) == '1';
-            Log.d(TAG, "same day of week" + sameDayOfWeek);
-
-            if (eventIsToday || event.getRenewType() == 0 || (weekly && sameDayOfWeek)) {
+            if (onSameDay(pageDate, eventDate) || event.getRenewType() == 0 || sameDayOfWeek) {
                 Project project = getProject(event.getProjectKey());
                 EventView eventView = new EventView(getContext(), event, project);
                 eventsToday.add(event);
@@ -496,6 +489,27 @@ public class ScheduleView extends ViewGroup {
                 addView(eventView);
             }
         }
+    }
+
+    private boolean isOnSameWeekDay(int pageWeekDay, Event event) {
+        boolean sameWeekDay = false;
+        String days = event.getRenewDays();
+        if (days.charAt(pageWeekDay -1) == '1')
+            sameWeekDay = true;
+        return sameWeekDay;
+
+    }
+
+    private boolean onSameDay(Calendar page, Calendar event) {
+        int pageDay = page.get(Calendar.DAY_OF_MONTH);
+        int pageMonth = page.get(Calendar.MONTH);
+        int pageYear = page.get(Calendar.YEAR);
+        int eventDay = event.get(Calendar.DAY_OF_MONTH);
+        int eventMonth = event.get(Calendar.MONTH);
+        int eventYear = event.get(Calendar.YEAR);
+        return pageDay == eventDay && pageMonth == eventMonth && pageYear == eventYear;
+
+
     }
 
     private Project getProject(String key) {

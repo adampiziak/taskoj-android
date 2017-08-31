@@ -40,6 +40,9 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
     //Event data
     String projectKey = "default";
     String projectName;
+
+    long timeStart = 0;
+    long timeEnd = 0;
     int year = 0;
     int month = 0;
     int day = 0;
@@ -60,8 +63,12 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
     LinearLayout fieldProject;
     LinearLayout fieldRenew;
     TextView date;
-    TextView timeStart;
-    TextView timeEnd;
+
+    TextView actionSelectStartTime;
+    TextView actionSelectEndTime;
+    TextView actionSelectStartDate;
+    TextView actionSelectEndDate;
+
     TextView textProject;
     TextView textRenew;
     EditText eventName;
@@ -77,25 +84,35 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         hour = getIntent().getIntExtra("HOUR_OF_DAY", 0);
         startHour = hour;
         endHour = hour + 1;
+        Calendar cal = Calendar.getInstance();
+        String displayDayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
+        String displaymonth = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+        int displayDay = cal.get(Calendar.DAY_OF_MONTH);
 
         //Get database reference
         ref = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 
+        //Date and time views
+        actionSelectStartDate = findViewById(R.id.act_event_creator_action_select_start_date);
+        actionSelectEndDate = findViewById(R.id.act_event_creator_action_select_end_date);
+        actionSelectStartTime = findViewById(R.id.act_event_creator_action_select_start_time);
+        actionSelectEndTime = findViewById(R.id.act_event_creator_action_select_end_time);
+
         //Get views
         eventName = (EditText) findViewById(R.id.act_event_creator_name);
         fieldProject = (LinearLayout) findViewById(R.id.act_event_creator_project);
         textProject = (TextView) findViewById(R.id.act_event_creator_project_text);
-        timeStart = (TextView) findViewById(R.id.act_event_creator_timeStart);
-        timeEnd = (TextView) findViewById(R.id.act_event_creator_timeEnd);
         fab = (FloatingActionButton) findViewById(R.id.act_event_creator_fab);
-        date = (TextView) findViewById(R.id.act_event_creator_date);
         fieldRenew = (LinearLayout) findViewById(R.id.act_event_creator_repeat);
         textRenew = (TextView) findViewById(R.id.act_event_creator_repeat_text);
 
         //Set times for timepickers
-        timeStart.setText(hour + ":00");
-        timeEnd.setText((hour+1) + ":00");
+        actionSelectStartTime.setText(hour + ":00");
+        actionSelectEndTime.setText((hour+1) + ":00");
+        String dateDisplay = displayDayOfWeek + ", " + displaymonth + " " + displayDay;
+        actionSelectStartDate.setText(dateDisplay);
+        actionSelectEndDate.setText(dateDisplay);
 
         //Set status bar background color
         getWindow().setStatusBarColor(0xFF1976D2);
@@ -103,9 +120,10 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         //Set listeners
         fieldProject.setOnClickListener(this);
         fab.setOnClickListener(this);
-        date.setOnClickListener(this);
-        timeStart.setOnClickListener(this);
-        timeEnd.setOnClickListener(this);
+        actionSelectStartDate.setOnClickListener(this);
+        actionSelectEndDate.setOnClickListener(this);
+        actionSelectStartTime.setOnClickListener(this);
+        actionSelectEndTime.setOnClickListener(this);
         fieldRenew.setOnClickListener(this);
 
         //
@@ -159,18 +177,35 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
 
                 Event event = new Event();
                 event.setName(eventName.getText().toString());
-                event.setYear(year);
-                event.setMonth(month);
-                event.setDay(day);
-                event.setHour(hour);
-                event.setDuration(duration);
-                event.setMinute(minute);
+                event.setTimeStart(timeStart);
+                event.setTimeEnd(timeEnd);
                 event.setProjectKey(projectKey);
                 event.setRenewType(renewType);
                 event.setRenewDays(renewDays);
                 ref.child("events").child(auth.getCurrentUser().getUid()).push().setValue(event);
                 finish();
                 break;
+            case R.id.act_event_creator_action_select_start_date:
+                DatePickerFragment selectStartDate = new DatePickerFragment();
+                selectStartDate.updateAction(DatePickerFragment.ACTION_UPDATE_START_DATE);
+                selectStartDate.show(getSupportFragmentManager(), "DatePicker");
+                break;
+            case R.id.act_event_creator_action_select_end_date:
+                DatePickerFragment selectEndDate = new DatePickerFragment();
+                selectEndDate.updateAction(DatePickerFragment.ACTION_UPDATE_END_DATE);
+                selectEndDate.show(getSupportFragmentManager(), "DatePicker");
+                break;
+            case R.id.act_event_creator_action_select_start_time:
+                TimePickerFragment selectStartTime = new TimePickerFragment();
+                selectStartTime.updateAction(TimePickerFragment.ACTION_UPDATE_START_TIME);
+                selectStartTime.show(getSupportFragmentManager(), "TimePicker");
+                break;
+            case R.id.act_event_creator_action_select_end_time:
+                TimePickerFragment selectEndTime = new TimePickerFragment();
+                selectEndTime.updateAction(TimePickerFragment.ACTION_UPDATE_END_TIME);
+                selectEndTime.show(getSupportFragmentManager(), "TimePicker");
+                break;
+            /*
             case R.id.act_event_creator_date:
                 DialogFragment datePicker = new DatePickerFragment();
                 datePicker.show(getSupportFragmentManager(), "DatePicker");
@@ -184,10 +219,12 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                 fragment.timeStart = false;
                 fragment.show(getSupportFragmentManager(), "timePicker");
                 break;
+                */
             case R.id.act_event_creator_repeat:
                 Intent intentRenew = new Intent(context, RenewPicker.class);
                 startActivityForResult(intentRenew, REQUEST_RENEW_TYPE);
                 break;
+
         }
     }
 
@@ -197,6 +234,16 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
+
+        public static final int NO_ACTION = -1;
+        public static final int ACTION_UPDATE_START_DATE = 0;
+        public static final int ACTION_UPDATE_END_DATE = 1;
+
+        private int action = NO_ACTION;
+
+        public void updateAction(int action) {
+            this.action = action;
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -217,13 +264,24 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
             c.set(Calendar.MONTH, m);
             c.set(Calendar.DAY_OF_MONTH, d);
 
-            String dayOfWeek = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
-            String monthOfYear = c.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+
             ActEventCreator eventCreator = (ActEventCreator) getContext();
-            eventCreator.year = y;
-            eventCreator.month = m;
-            eventCreator.day = d;
-            eventCreator.date.setText(dayOfWeek + ", " + monthOfYear + " " + d + ", " + y);
+            switch (action) {
+                case ACTION_UPDATE_START_DATE:
+                    Calendar startTimes = Calendar.getInstance();
+                    startTimes.setTimeInMillis(eventCreator.timeStart);
+                    c.set(Calendar.HOUR_OF_DAY, startTimes.get(Calendar.HOUR_OF_DAY));
+                    c.set(Calendar.MINUTE, startTimes.get(Calendar.MINUTE));
+                    eventCreator.timeStart = c.getTimeInMillis();
+                    break;
+                case ACTION_UPDATE_END_DATE:
+                    Calendar endTimes = Calendar.getInstance();
+                    endTimes.setTimeInMillis(eventCreator.timeEnd);
+                    c.set(Calendar.HOUR_OF_DAY, endTimes.get(Calendar.HOUR_OF_DAY));
+                    c.set(Calendar.MINUTE, endTimes.get(Calendar.MINUTE));
+                    eventCreator.timeEnd = c.getTimeInMillis();
+                    break;
+            }
 
         }
     }
@@ -231,16 +289,21 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
-        public boolean timeStart = true;
+        public static final int NO_ACTION = -1;
+        public static final int ACTION_UPDATE_START_TIME = 0;
+        public static final int ACTION_UPDATE_END_TIME = 1;
 
+        public int action = NO_ACTION;
+
+        public void updateAction(int action) {
+            this.action = action;
+        }
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Create a new instance of TimePickerDialog and return it
             int hour = ((ActEventCreator) getContext()).hour;
-            if (!timeStart)
-                hour += 1;
             return new TimePickerDialog(getActivity(), this, hour, 0,
                     DateFormat.is24HourFormat(getActivity()));
         }
@@ -248,23 +311,29 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             // Do something with the time chosen by the user
             ActEventCreator eventCreator = (ActEventCreator) getContext();
-            String period = (hourOfDay < 12) ? "AM" : "PM";
-            eventCreator.hour = hourOfDay;
-            eventCreator.minute = minute;
-            if (timeStart) {
-                eventCreator.startHour = hourOfDay;
-                eventCreator.startMinute = minute;
-            } else {
-                eventCreator.endHour = hourOfDay;
-                eventCreator.endMinute = minute;
+            Calendar date = Calendar.getInstance();
+            Calendar time = Calendar.getInstance();
+            time.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            time.set(Calendar.MINUTE, minute);
+            switch (action) {
+                case ACTION_UPDATE_START_TIME:
+                    date.setTimeInMillis(eventCreator.timeStart);
+                    time.set(Calendar.YEAR, date.get(Calendar.YEAR));
+                    time.set(Calendar.MONTH, date.get(Calendar.MONTH));
+                    time.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
+                    eventCreator.timeStart = time.getTimeInMillis();
+                    break;
+                case ACTION_UPDATE_END_TIME:
+                    date.setTimeInMillis(eventCreator.timeEnd);
+                    time.set(Calendar.YEAR, date.get(Calendar.YEAR));
+                    time.set(Calendar.MONTH, date.get(Calendar.MONTH));
+                    time.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
+                    eventCreator.timeEnd = time.getTimeInMillis();
+                    break;
             }
 
-            int tempHour = (hourOfDay > 12) ? (hourOfDay - 12) : hourOfDay;
-            String min = (minute > 9) ? String.valueOf(minute) : "0" + minute;
-            if (timeStart)
-                eventCreator.timeStart.setText(tempHour + ":" + min + " " + period);
-            else
-                eventCreator.timeEnd.setText(tempHour + ":" + min + " " + period);
+
+
 
         }
     }

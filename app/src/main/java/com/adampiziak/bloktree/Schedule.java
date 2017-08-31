@@ -91,6 +91,7 @@ public class Schedule extends NestedScrollView {
         int currentMonth = c.get(Calendar.MONTH);
         int currentDay = c.get(Calendar.DAY_OF_MONTH);
         int currentYear = c.get(Calendar.YEAR);
+        /*
         for (Event event : events) {
             if (event.getDay() == currentDay
                 && event.getMonth() == currentMonth
@@ -98,6 +99,7 @@ public class Schedule extends NestedScrollView {
                 eventsToday.add(event);
             }
         }
+        */
     }
 
     void init() {
@@ -106,12 +108,15 @@ public class Schedule extends NestedScrollView {
         ref.child("events").child(auth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                /*
                 Event event = Tools.createEventFromSnapshot(dataSnapshot);
+
                 event.container = new RectF(mainOffset,
                         (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + rootPadding,
                         rootWidth - rootPadding,
                         (float) event.getHour() * hourHeight + rootPadding + ((float) event.getDuration() / 60)*hourHeight);
                 events.add(event);
+                */
                 filterEvents();
                 invalidate();
             }
@@ -256,9 +261,9 @@ public class Schedule extends NestedScrollView {
         canvas.drawRoundRect(event.container, 8, 8, getEventPaint(project.getColor()));
 
         //Draw project text
-        canvas.drawText(project.getName() + " · (" + event.getDuration()/60 + " hr)", mainOffset + dpToPx(10), (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + textHeightG/2 + rootPadding + dpToPx(15), getEventProjectTextPaint());
+        //canvas.drawText(project.getName() + " · (" + event.getDuration()/60 + " hr)", mainOffset + dpToPx(10), (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + textHeightG/2 + rootPadding + dpToPx(15), getEventProjectTextPaint());
         //Draw event name text
-        canvas.drawText(event.getName(), mainOffset + dpToPx(10), (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + textHeightG/2 + rootPadding + dpToPx(40), getEventNameTextPaint());
+        //canvas.drawText(event.getName(), mainOffset + dpToPx(10), (float) event.getHour() * hourHeight + ((float) event.getMinute()/60)*hourHeight + textHeightG/2 + rootPadding + dpToPx(40), getEventNameTextPaint());
     }
 
     private TextPaint getEventProjectTextPaint() {

@@ -50,12 +50,8 @@ public class Tools {
     public static Event createEventFromSnapshot(DataSnapshot snap) {
         Event event = new Event();
         event.setName(snap.child("name").getValue().toString());
-        event.setYear((long) snap.child("year").getValue());
-        event.setMonth((long) snap.child("month").getValue());
-        event.setDay((long) snap.child("day").getValue());
-        event.setHour((long) snap.child("hour").getValue());
-        event.setMinute((long) snap.child("minute").getValue());
-        event.setDuration((long) snap.child("duration").getValue());
+        event.setTimeStart((long) snap.child("timeStart").getValue());
+        event.setTimeEnd((long) snap.child("timeEnd").getValue());
         event.setProjectKey(snap.child("projectKey").getValue().toString());
         event.setRenewType((snap.child("renewType").getValue() != null) ? (long) snap.child("renewType").getValue() : -1);
         event.setRenewDays(snap.child("renewDays").getValue().toString());
