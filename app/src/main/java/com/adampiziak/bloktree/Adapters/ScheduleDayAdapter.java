@@ -346,7 +346,7 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
 
 
     }
-
+    //git
     private void sync() {
 
     }
