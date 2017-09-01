@@ -8,43 +8,63 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 
+import com.adampiziak.bloktree.Event;
 import com.adampiziak.bloktree.Fragments.FraSchedule;
 import com.adampiziak.bloktree.Fragments.FraSchedulePager;
 import com.adampiziak.bloktree.Fragments.FraSplash;
+import com.adampiziak.bloktree.Project;
+import com.adampiziak.bloktree.Task;
 import com.adampiziak.bloktree.Taskoj;
+import com.adampiziak.bloktree.Tools;
+import com.adampiziak.bloktree.Zone;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
-    final String TAG = "VIEW_PAGER";
+    //debug
+    final String TAG = "SCHEDULE_DAY_ADAPTER";
+
+    //Parent Fragment with viewpager
+    FraSchedulePager parent;
+
+    //Adapter data
     final int PAGE_COUNT = 11;
     int offset = 0;
-    FraSchedulePager parent;
+    int currentPosition = 5;
+    boolean firstCall = true;
+
+    //Once all data has been fetched, start updating UI
+    boolean fetchedTasks = false;
+    boolean fetchedProjects = false;
+    boolean fetchedEvents = false;
+    boolean fetchedZones = false;
+
+    //App state
     Taskoj taskoj;
 
-    int year = 0;
-    int month = 0;
-    int day = 0;
-    boolean firstCall = true;
-    int currentPosition = 5;
+    //Firebase
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-        notifyDataSetChanged();
-    }
-
-    public int getOffset() {
-        return this.offset;
-    }
-
+    //All data
+    List<Task> tasks = new ArrayList<>();
+    List<Project> projects = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
+    List<Zone> zones = new ArrayList<>();
 
     public ScheduleDayAdapter(FragmentManager fm, FraSchedulePager context) {
         super(fm);
         this.parent = context;
-        Calendar c = Calendar.getInstance();
-        year = c.get(Calendar.YEAR);
-        month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
         taskoj = (Taskoj) context.getActivity().getApplication();
     }
 
@@ -74,7 +94,7 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
         }
         FraSchedule fragment = new FraSchedule();
         if (firstCall) {
-            //fragment.scrollToCurrentTime(0);
+            fragment.scrollToCurrentTime(0);
             firstCall = false;
         }
         fragment.setDayOffset(offset + (position - 5));
@@ -94,6 +114,243 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
         return PAGE_COUNT;
     }
 
+    private void fetchInitial() {
+
+        //Queries
+        String userId = auth.getCurrentUser().getUid();
+        Query tasksRef = ref.child("tasks").child(userId);
+        Query projectsRef = ref.child("projects").child(userId);
+        Query eventsRef = ref.child("events").child(userId);
+        Query zonesRef = ref.child("zones").child(userId);
+
+        //Single value events, these are always called after onChildChanged listeners
+        tasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchedTasks = true;
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        projectsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchedProjects = true;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchedEvents = true;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        zonesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchedZones = true;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //child event listeners
+        tasksRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Task task = Tools.createTaskFromSnapshot(dataSnapshot);
+                tasks.add(task);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Task task = Tools.createTaskFromSnapshot(dataSnapshot);
+                boolean found = false;
+                for (int i = 0; i < tasks.size(); i++) {
+                    if (tasks.get(i).getKey().equals(task.getKey())) {
+                        tasks.set(i, task);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    tasks.add(task);
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                for (int i = 0; i < tasks.size(); i++) {
+                    if (tasks.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        tasks.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        projectsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Project project = Tools.createProjectFromSnapshot(dataSnapshot);
+                projects.add(project);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Project project = Tools.createProjectFromSnapshot(dataSnapshot);
+                boolean found = false;
+                for (int i = 0; i < projects.size(); i++) {
+                    if (projects.get(i).getKey().equals(project.getKey())) {
+                        projects.set(i, project);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    projects.add(project);
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                for (int i = 0; i < projects.size(); i++) {
+                    if (projects.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        projects.remove(i);
+                        break;
+                    }
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        eventsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Event event = Tools.createEventFromSnapshot(dataSnapshot);
+                events.add(event);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Event event = Tools.createEventFromSnapshot(dataSnapshot);
+                boolean found = false;
+                for (int i = 0; i < events.size(); i++) {
+                    if (events.get(i).getKey().equals(event.getKey())) {
+                        events.set(i, event);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    events.add(event);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                for (int i = 0; i < events.size(); i++) {
+                    if (events.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        events.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        zonesRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Zone zone = Tools.createZoneFromSnapshot(dataSnapshot);
+                zones.add(zone);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Zone zone = Tools.createZoneFromSnapshot(dataSnapshot);
+                boolean found = false;
+                for (int i = 0; i < zones.size(); i++) {
+                    if (zones.get(i).getKey().equals(zone.getKey())) {
+                        zones.set(i, zone);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    zones.add(zone);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                for (int i = 0; i < zones.size(); i++) {
+                    if (zones.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        zones.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+    }
+
+    private void sync() {
+
+    }
+
     public void setCurrentDay() {
         long delay = (parent.getViewPager().getCurrentItem() == 5 && offset == 0) ? 0 : 250;
         if (offset > 0)
@@ -103,16 +360,24 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
         offset = 0;
         parent.setPage(5, true);
 
-        ((FraSchedule) getFragmentInView()).scrollToCurrentTime(delay);
+        getFragmentInView().scrollToCurrentTime(delay);
     }
 
-    public void resumeScrollState(int scrollOffset) {
-        ((FraSchedule) getFragmentInView()).scrollTo(scrollOffset);
-    }
-
-    //By Nepster
-    public Fragment getFragmentInView()
+    //By Nepster, stackoverflow
+    public FraSchedule getFragmentInView()
     {
-        return ((Fragment) (instantiateItem(parent.getViewPager(), parent.getViewPager().getCurrentItem())));
+        return ((FraSchedule) (instantiateItem(parent.getViewPager(), parent.getViewPager().getCurrentItem())));
     }
+
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+        notifyDataSetChanged();
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
+
+
 }

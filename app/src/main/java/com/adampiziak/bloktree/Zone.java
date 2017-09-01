@@ -1,5 +1,7 @@
 package com.adampiziak.bloktree;
 
+import com.google.firebase.database.Exclude;
+
 public class Zone {
 
     private String name = "ZONE_PLACEHOLDER_NAME";
@@ -7,6 +9,9 @@ public class Zone {
     private long timeStart = 0;
     private long timeEnd = 0;
     private int renewType = -1;
+
+    @Exclude
+    private String key = "";
 
     public Zone() {}
 
@@ -55,6 +60,15 @@ public class Zone {
 
     public void setRenewType(int renewType) {
         this.renewType = renewType;
+    }
+
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

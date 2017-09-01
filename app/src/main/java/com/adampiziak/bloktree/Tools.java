@@ -49,6 +49,7 @@ public class Tools {
 
     public static Event createEventFromSnapshot(DataSnapshot snap) {
         Event event = new Event();
+        event.setKey(snap.getKey());
         event.setName(snap.child("name").getValue().toString());
         event.setTimeStart((long) snap.child("timeStart").getValue());
         event.setTimeEnd((long) snap.child("timeEnd").getValue());
@@ -60,6 +61,7 @@ public class Tools {
 
     public static Zone createZoneFromSnapshot(DataSnapshot snap) {
         Zone zone = new Zone();
+        zone.setKey(snap.getKey());
         zone.setName(snap.child("name").getValue().toString());
         zone.setColor(snap.child("color").getValue().toString());
         zone.setTimeStart((long) snap.child("timeStart").getValue());

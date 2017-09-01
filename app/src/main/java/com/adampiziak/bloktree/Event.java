@@ -12,6 +12,9 @@ public class Event {
     private long renewType = -1;
     private String renewDays = "0000000";
 
+    @Exclude
+    String key = "";
+
 
 
     public String getName() {
@@ -58,6 +61,14 @@ public class Event {
 
     public void setTimeEnd(long timeEnd) {
         this.timeEnd = timeEnd;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
 
