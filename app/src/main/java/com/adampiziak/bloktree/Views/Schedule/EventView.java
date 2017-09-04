@@ -12,6 +12,7 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.MotionEventCompat;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -41,6 +42,7 @@ public class EventView extends View {
         this.event = event;
         this.project = project;
         setTransitionName("EVENT_SHARED");
+        setBackgroundColor(Color.BLUE);
     }
 
     @Override
@@ -55,6 +57,7 @@ public class EventView extends View {
         }
         return true;
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -71,6 +74,7 @@ public class EventView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.d(TAG, "onDraw: ");
         drawBackground(canvas);
         drawName(canvas);
     }
@@ -92,6 +96,7 @@ public class EventView extends View {
         Paint paint = new Paint();
         paint.setColor(Color.parseColor(project.getColor()));
         canvas.drawRoundRect(0, 0, eventWidth, eventHeight, 8, 8, paint);
+        Log.d(TAG, "drawBackground: ");
     }
 
     public Event getEvent() {

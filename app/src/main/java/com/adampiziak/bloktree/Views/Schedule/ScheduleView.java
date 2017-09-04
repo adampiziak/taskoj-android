@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.adampiziak.bloktree.Activities.ActEventCreator;
 import com.adampiziak.bloktree.Activities.ActMain;
@@ -60,11 +61,13 @@ public class ScheduleView extends ViewGroup {
     EventView eventView;
 
     //Data
-    private List<Event> events = new ArrayList<>();
-    private List<Event> eventsToday = new ArrayList<>();
+
     private List<Task> tasks = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
     private List<Project> projects = new ArrayList<>();
     private List<Zone> zones = new ArrayList<>();
+
+    private List<Event> eventsToday = new ArrayList<>();
     private int dayOffset = 0;
 
     //UI data
@@ -96,14 +99,27 @@ public class ScheduleView extends ViewGroup {
 
         //Initialize views
         eventView = new EventView(getContext());
-        sync();
+        //sync();
 
         //Allowing drawing, Android disables this by default for layouts
         setWillNotDraw(false);
 
         //Get projects first before syncing all data
-        syncProjects();
+        //syncProjects();
 
+    }
+
+    public void setData(List<Task> tasks, List<Project> projects, List<Event> events, List<Zone> zones) {
+        this.tasks = tasks;
+        this.projects = projects;
+        this.events = events;
+        this.zones = zones;
+        Log.d(TAG, "tasks " + tasks.size());
+        Log.d(TAG, "projects " + projects.size());
+        Log.d(TAG, "events " + events.size());
+        Log.d(TAG, "zones " + zones.size());
+        filterEvents();
+        Log.d(TAG, "eventsToday " + eventsToday.size());
     }
 
     @Override
@@ -131,6 +147,7 @@ public class ScheduleView extends ViewGroup {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         rootWidth = View.MeasureSpec.getSize(widthMeasureSpec);
         super.setMeasuredDimension(rootWidth, rootHeight);
+        filterEvents();
     }
 
     @Override
@@ -139,8 +156,13 @@ public class ScheduleView extends ViewGroup {
             final View child = getChildAt(i);
             if (child instanceof EventView) {
                 Event event = ((EventView) child).getEvent();
+                Log.d(TAG, "onLayout: " + event.container.top + " " + event.container.bottom + " " + event.container.left + " " + event.container.right);
                 child.layout((int) event.container.left, (int) event.container.top, (int) event.container.right, (int)  event.container.bottom);
+            }
 
+            if (child instanceof TextView) {
+                Log.d(TAG, "TEXTVIEW");
+                child.layout(0, 0, rootWidth, 1000);
             }
         }
 
@@ -154,8 +176,6 @@ public class ScheduleView extends ViewGroup {
             drawCurrentTime(canvas); //blue line indicating current time
 
         drawZones(canvas);
-
-
 
         //if user has pressed on an empty hour, create a "new event" visual
         if (newEventHour >= 0 && newEventHour < 24)
@@ -332,140 +352,6 @@ public class ScheduleView extends ViewGroup {
         invalidate();
     }
 
-    //Sync to Firebase
-    private void syncProjects() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        ref.child("projects").child(auth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Project project = Tools.createProjectFromSnapshot(dataSnapshot);
-                projects.add(project);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                invalidate();
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                invalidate();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        ref.child("projects").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                sync();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void sync() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        ref.child("events").child(auth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Event event = Tools.createEventFromSnapshot(dataSnapshot);
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(event.getTimeStart());
-                int startHour = cal.get(Calendar.HOUR_OF_DAY);
-                int startMinute = cal.get(Calendar.MINUTE);
-                float duration = (float) (event.getTimeEnd() - event.getTimeStart()) / (60f * 60f * 1000f);
-                event.container = new RectF(eventContainerLeft,
-                        (float) startHour * hourHeight + ((float) startMinute/60)*hourHeight + rootPadding,
-                        rootWidth - rootPadding,
-                        (float) startHour * hourHeight + ((float) startMinute/60)*hourHeight + rootPadding + duration*hourHeight);
-
-                events.add(event);
-                filterEvents();
-                invalidate();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                invalidate();
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                invalidate();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        Calendar zero = Calendar.getInstance();
-        zero.set(Calendar.HOUR_OF_DAY, 0);
-        zero.set(Calendar.MINUTE, 0);
-        zero.add(Calendar.DAY_OF_MONTH, dayOffset);
-        final long zeroMilli = zero.getTimeInMillis();
-        Calendar nextDay = Calendar.getInstance();
-        nextDay.set(Calendar.HOUR_OF_DAY, 0);
-        nextDay.set(Calendar.MINUTE, 0);
-        nextDay.add(Calendar.DAY_OF_MONTH, dayOffset);
-        nextDay.add(Calendar.DAY_OF_MONTH, 1);
-        final long nextDayMilli = nextDay.getTimeInMillis();
-
-        ref.child("zones").child(auth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Zone zone = Tools.createZoneFromSnapshot(dataSnapshot);
-                if (zone.getTimeStart() > zeroMilli && zone.getTimeEnd() < nextDayMilli) {
-                    zones.add(zone);
-                    Log.d(TAG, "ADDED ZONE");
-                }
-                if (zone.getRenewType() == 0)
-                    zones.add(zone );
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
     void filterEvents() {
         eventsToday = new ArrayList<>();
         Calendar now = Calendar.getInstance();
@@ -481,12 +367,26 @@ public class ScheduleView extends ViewGroup {
                 sameDayOfWeek = isOnSameWeekDay(pageWeekDay, event);
 
             if (onSameDay(pageDate, eventDate) || event.getRenewType() == 0 || sameDayOfWeek) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(event.getTimeStart());
+                int hourStart = cal.get(Calendar.HOUR_OF_DAY);
+                int minuteStart = cal.get(Calendar.MINUTE);
+                float durationHours = ((float) (event.getTimeEnd() - event.getTimeStart())) / (1000f*60f*60f);
+                float eventTop = rootPadding + hourStart*hourHeight + (minuteStart/60)*hourHeight;
+                Log.d(TAG, "rootWidth" + rootWidth);
+                Log.d(TAG, "rootPadding" + rootPadding);
+                event.container = new RectF(eventContainerLeft, eventTop, rootWidth-rootPadding, eventTop + durationHours*hourHeight);
                 Project project = getProject(event.getProjectKey());
                 EventView eventView = new EventView(getContext(), event, project);
-                eventsToday.add(event);
-                final LayoutParams lp = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
+                final LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, MATCH_PARENT);
                 eventView.setLayoutParams(lp);
+                eventsToday.add(event);
                 addView(eventView);
+                TextView test = new TextView(getContext());
+                test.setText("Hello there");
+                final LayoutParams testLP = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
+                test.setLayoutParams(testLP);
+                addView(test);
             }
         }
     }

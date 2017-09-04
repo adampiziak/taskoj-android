@@ -48,6 +48,7 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
     boolean fetchedProjects = false;
     boolean fetchedEvents = false;
     boolean fetchedZones = false;
+    boolean fetchedAll = false;
 
     //App state
     Taskoj taskoj;
@@ -66,6 +67,7 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
         super(fm);
         this.parent = context;
         taskoj = (Taskoj) context.getActivity().getApplication();
+        sync();
     }
 
     @Override
@@ -93,10 +95,13 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             }, 0);
         }
         FraSchedule fragment = new FraSchedule();
+        /*
         if (firstCall) {
             fragment.scrollToCurrentTime(0);
             firstCall = false;
         }
+        */
+        fragment.setData(tasks, projects, events, zones);
         fragment.setDayOffset(offset + (position - 5));
         currentPosition = position;
         return fragment;
@@ -114,7 +119,7 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
         return PAGE_COUNT;
     }
 
-    private void fetchInitial() {
+    private void sync() {
 
         //Queries
         String userId = auth.getCurrentUser().getUid();
@@ -128,6 +133,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchedTasks = true;
+                fetchedAll = fetchedTasks && fetchedProjects && fetchedEvents && fetchedZones;
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -138,6 +146,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchedProjects = true;
+                fetchedAll = fetchedTasks && fetchedProjects && fetchedEvents && fetchedZones;
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -149,6 +160,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchedEvents = true;
+                fetchedAll = fetchedTasks && fetchedProjects && fetchedEvents && fetchedZones;
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -160,6 +174,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchedZones = true;
+                fetchedAll = fetchedTasks && fetchedProjects && fetchedEvents && fetchedZones;
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -174,6 +191,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Task task = Tools.createTaskFromSnapshot(dataSnapshot);
                 tasks.add(task);
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -190,6 +210,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                 if (!found)
                     tasks.add(task);
 
+                if (fetchedAll)
+                    notifyDataSetChanged();
+
             }
 
             @Override
@@ -200,6 +223,8 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                         break;
                     }
                 }
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -217,6 +242,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Project project = Tools.createProjectFromSnapshot(dataSnapshot);
                 projects.add(project);
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -233,6 +261,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                 if (!found)
                     projects.add(project);
 
+                if (fetchedAll)
+                    notifyDataSetChanged();
+
             }
 
             @Override
@@ -243,6 +274,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                         break;
                     }
                 }
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
 
             }
 
@@ -261,6 +295,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Event event = Tools.createEventFromSnapshot(dataSnapshot);
                 events.add(event);
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -287,6 +324,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                         break;
                     }
                 }
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -304,6 +344,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Zone zone = Tools.createZoneFromSnapshot(dataSnapshot);
                 zones.add(zone);
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -319,6 +362,9 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                 }
                 if (!found)
                     zones.add(zone);
+
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -329,6 +375,8 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
                         break;
                     }
                 }
+                if (fetchedAll)
+                    notifyDataSetChanged();
             }
 
             @Override
@@ -341,13 +389,6 @@ public class ScheduleDayAdapter extends FragmentStatePagerAdapter {
 
             }
         });
-
-
-
-
-    }
-    //git
-    private void sync() {
 
     }
 

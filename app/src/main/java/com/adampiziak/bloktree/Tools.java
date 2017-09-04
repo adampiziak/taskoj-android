@@ -25,7 +25,8 @@ public class Tools {
         task.setRepeat((snap.child("repeat").getValue() != null) ? (long) snap.child("repeat").getValue() : 0);
         if (snap.child("finishedTime").getValue() != null)
             task.setFinishedTime((long) snap.child("finishedTime").getValue());
-        task.setDuration((long) snap.child("duration").getValue());
+        if (snap.child("duration").getValue() != null)
+            task.setDuration((long) snap.child("duration").getValue());
         task.setPostponedUntil((postponeUntil != null) ? (long) postponeUntil : 0);
         task.setDueDate((snap.child("dueDate").getValue() != null) ? (long) snap.child("dueDate").getValue() : 0);
         if (snap.child("subTasks") != null) {

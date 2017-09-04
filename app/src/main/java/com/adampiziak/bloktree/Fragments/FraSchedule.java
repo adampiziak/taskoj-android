@@ -18,12 +18,18 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.adampiziak.bloktree.Event;
+import com.adampiziak.bloktree.Project;
+import com.adampiziak.bloktree.Task;
 import com.adampiziak.bloktree.Taskoj;
 import com.adampiziak.bloktree.R;
 import com.adampiziak.bloktree.Schedule;
 import com.adampiziak.bloktree.Views.Schedule.ScheduleView;
+import com.adampiziak.bloktree.Zone;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import it.enricocandino.view.SynchronizedScrollView;
@@ -44,6 +50,18 @@ public class FraSchedule extends Fragment {
 
     public FraSchedule() {
         // Required empty public constructor
+    }
+
+    List<Task> tasks = new ArrayList<>();
+    List<Project> projects = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
+    List<Zone> zones = new ArrayList<>();
+
+    public void setData(List<Task> tasks, List<Project> projects, List<Event> events, List<Zone> zones) {
+        this.tasks = tasks;
+        this.projects = projects;
+        this.events = events;
+        this.zones = zones;
     }
 
     public void setDayOffset(int offset) {
@@ -93,6 +111,7 @@ public class FraSchedule extends Fragment {
         View v = inflater.inflate(R.layout.fra_schedule, container, false);
         scrollView = (SynchronizedScrollView) v.findViewById(R.id.schedule_scrollview);
         scheduleView = new ScheduleView(getContext(), this.dayOffset);
+        scheduleView.setData(tasks, projects, events, zones);
         scheduleView.setLayoutParams(new ScrollView.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         scrollView.addView(scheduleView);
 
