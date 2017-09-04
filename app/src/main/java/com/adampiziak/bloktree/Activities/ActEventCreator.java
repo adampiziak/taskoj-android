@@ -423,7 +423,6 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     time.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
                     eventCreator.timeEnd = time.getTimeInMillis();
                     eventCreator.updateDatesAndTimes();
-                    eventCreator.updateDatesAndTimes();
                     break;
             }
 
