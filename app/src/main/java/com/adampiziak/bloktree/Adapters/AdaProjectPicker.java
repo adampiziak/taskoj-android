@@ -102,7 +102,7 @@ public class AdaProjectPicker extends RecyclerView.Adapter<AdaProjectPicker.View
         if (filterText == "" || name.contains(filterText)) {
             holder.mRoot.setVisibility(View.VISIBLE);
             final String color = project.getColor();
-            holder.mTextView.setText(name);
+            holder.mTextView.setText(capitalizeSentence(name));
             holder.mGroupColor.setImageDrawable(backgroundCircle(color));
             final int i = position;
             holder.mRoot.setOnClickListener(new View.OnClickListener() {
@@ -148,5 +148,9 @@ public class AdaProjectPicker extends RecyclerView.Adapter<AdaProjectPicker.View
             }
             notifyDataSetChanged();
         }
+    }
+
+    private String capitalizeSentence(String sentence) {
+        return sentence.substring(0, 1).toUpperCase() + sentence.substring(1);
     }
 }

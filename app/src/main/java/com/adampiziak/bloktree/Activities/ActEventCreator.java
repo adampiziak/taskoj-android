@@ -220,12 +220,23 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                             textRenew.setText("Repeat daily");
                             break;
                         case 1:
-                            textRenew.setText("Repeat weekly");
+                            textRenew.setText("Repeat weekly " + getRenewDaysDisplay());
                             break;
                     }
                     break;
             }
         }
+    }
+
+    private String getRenewDaysDisplay() {
+        String[] days = {"sun", "mon", "tues", "wed", "thru", "fri", "sat"};
+        String displayText = "  ( ";
+        for (int i = 0; i < 7; i++) {
+            if (renewDays.charAt(i) == '1') {
+                displayText += days[i] + " ";
+            }
+        }
+        return displayText + ")";
     }
 
     private void setToolBarColor(final int color) {
