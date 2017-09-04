@@ -382,11 +382,6 @@ public class ScheduleView extends ViewGroup {
                 eventView.setLayoutParams(lp);
                 eventsToday.add(event);
                 addView(eventView);
-                TextView test = new TextView(getContext());
-                test.setText("Hello there");
-                final LayoutParams testLP = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
-                test.setLayoutParams(testLP);
-                addView(test);
             }
         }
     }
