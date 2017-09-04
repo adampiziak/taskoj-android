@@ -11,13 +11,14 @@
         <FrameLayout
             android:id="@+id/toolbar_color_placeholder"
             android:layout_width="match_parent"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
             android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/act_event_creator_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="#2196F3"
-                android:elevation="4dp">
+                android:background="#0091EA">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,7 +65,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_today_black_24px"
+                    android:src="@drawable/ic_date_range_black_24px"
                     android:alpha="0.6"
                     android:layout_marginTop="20dp"
                     android:layout_gravity="top"
@@ -86,9 +87,10 @@
                             android:text="DATE_START_PLACEHOLDER"
                             android:background="?android:attr/selectableItemBackground"
                             android:paddingTop="20dp"
+                            android:paddingStart="20dp"
                             android:paddingBottom="10dp"
                             android:paddingEnd="10dp"
-                            android:gravity="right"/>
+                            android:gravity="left"/>
                         <TextView
                             android:id="@+id/act_event_creator_action_select_start_time"
                             android:layout_width="wrap_content"
@@ -111,10 +113,11 @@
                             android:background="?android:attr/selectableItemBackground"
                             android:layout_height="wrap_content"
                             android:text="DATE_END_PLACEHOLDER"
+                            android:paddingStart="20dp"
                             android:paddingTop="20dp"
                             android:paddingBottom="20dp"
                             android:paddingEnd="10dp"
-                            android:gravity="right"/>
+                            android:gravity="left"/>
                         <TextView
                             android:id="@+id/act_event_creator_action_select_end_time"
                             android:layout_width="wrap_content"
@@ -168,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingStart="20dp"
-                    android:text="do not repeat"/>
+                    android:text="Do not repeat"/>
             </LinearLayout>
             <View style="@style/Divider" />
             <LinearLayout

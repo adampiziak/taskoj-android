@@ -55,11 +55,6 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
 
     long timeStart = 0;
     long timeEnd = 0;
-    int year = 0;
-    int month = 0;
-    int day = 0;
-    int hour = 0;
-    int minute = 0;
     int startHour = 0;
     int startMinute = 0;
     int endHour = 0;
@@ -100,9 +95,8 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         syncProjects();
 
         //Get intent extras
-        hour = getIntent().getIntExtra("HOUR_OF_DAY", 0);
-        startHour = hour;
-        endHour = hour + 1;
+        startHour = getIntent().getIntExtra("HOUR_OF_DAY", 8);
+        endHour = startHour + 1;
         Calendar cal = Calendar.getInstance();
         String displayDayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
         String displaymonth = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
@@ -129,8 +123,8 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         toolbarColor = findViewById(R.id.toolbar_color_placeholder);
 
         //Set times for timepickers
-        actionSelectStartTime.setText(hour + ":00");
-        actionSelectEndTime.setText((hour+1) + ":00");
+        actionSelectStartTime.setText(startHour + ":00");
+        actionSelectEndTime.setText((startHour+1) + ":00");
         String dateDisplay = displayDayOfWeek + ", " + displaymonth + " " + displayDay;
         actionSelectStartDate.setText(dateDisplay);
         actionSelectEndDate.setText(dateDisplay);
@@ -147,12 +141,56 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         actionSelectEndTime.setOnClickListener(this);
         fieldRenew.setOnClickListener(this);
 
-        //
-        Calendar c = Calendar.getInstance();
-        year = c.get(Calendar.YEAR);
-        month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
+        setInitialTime();
+    }
 
+    private void setInitialTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, startHour);
+        cal.set(Calendar.HOUR_OF_DAY, startMinute);
+        timeStart = cal.getTimeInMillis();
+        cal.add(Calendar.HOUR_OF_DAY, 1);
+        timeEnd = cal.getTimeInMillis();
+        updateDatesAndTimes();
+    }
+
+    public void updateDatesAndTimes() {
+        //configure calendar instances
+        Calendar start = Calendar.getInstance();
+        start.setTimeInMillis(timeStart);
+        Calendar end = Calendar.getInstance();
+        end.setTimeInMillis(timeEnd);
+
+        ////start date
+        String startDayOfWeek = start.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
+        String startMonth = start.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
+        int startDay = start.get(Calendar.DAY_OF_MONTH);
+        int startYear = start.get(Calendar.YEAR);
+        String startDate = startDayOfWeek + ", " + startMonth + " " + startDay + ", " + startYear;
+        ////end date
+        String endDayOfWeek = end.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
+        String endMonth = end.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
+        int endDay = end.get(Calendar.DAY_OF_MONTH);
+        int endYear = end.get(Calendar.YEAR);
+        String endDate = endDayOfWeek + ", " + endMonth + " " + endDay + ", " + endYear;
+
+        //start time
+        int startHour = start.get(Calendar.HOUR);
+        int startMinute = start.get(Calendar.MINUTE);
+        String startMinuteDisplay = (startMinute > 9) ? String.valueOf(startMinute) : "0" + startMinute;
+        String startAMPM = start.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+
+        //end time
+        int endHour = end.get(Calendar.HOUR);
+        int endMinute = start.get(Calendar.MINUTE);
+        String endMinuteDisplay = (endMinute > 9) ? String.valueOf(endMinute) : "0" + endMinute;
+        String endAMPM = end.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+
+        //update views
+        actionSelectStartTime.setText(startHour + ":" + startMinuteDisplay + " " + startAMPM);
+        actionSelectStartDate.setText(startDate);
+        actionSelectEndDate.setText(endDate);
+        actionSelectEndTime.setText(endHour + ":" + endMinuteDisplay + " " + endAMPM);
 
     }
 
@@ -197,6 +235,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         toolbar.setBackgroundColor(Color.BLACK);
         Animator anim = ViewAnimationUtils.createCircularReveal(toolbar, cx, cy, 0, finalRadius);
         toolbar.setBackgroundColor(color);
+        anim.setDuration(360);
         anim.start();
         Window window = getWindow();
         window.setStatusBarColor(Tools.createDarkerColor(color));
@@ -313,6 +352,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     c.set(Calendar.HOUR_OF_DAY, startTimes.get(Calendar.HOUR_OF_DAY));
                     c.set(Calendar.MINUTE, startTimes.get(Calendar.MINUTE));
                     eventCreator.timeStart = c.getTimeInMillis();
+                    eventCreator.updateDatesAndTimes();
                     break;
                 case ACTION_UPDATE_END_DATE:
                     Calendar endTimes = Calendar.getInstance();
@@ -320,6 +360,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     c.set(Calendar.HOUR_OF_DAY, endTimes.get(Calendar.HOUR_OF_DAY));
                     c.set(Calendar.MINUTE, endTimes.get(Calendar.MINUTE));
                     eventCreator.timeEnd = c.getTimeInMillis();
+                    eventCreator.updateDatesAndTimes();
                     break;
             }
 
@@ -343,7 +384,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Create a new instance of TimePickerDialog and return it
-            int hour = ((ActEventCreator) getContext()).hour;
+            int hour = ((ActEventCreator) getContext()).startHour;
             return new TimePickerDialog(getActivity(), this, hour, 0,
                     DateFormat.is24HourFormat(getActivity()));
         }
@@ -362,6 +403,7 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     time.set(Calendar.MONTH, date.get(Calendar.MONTH));
                     time.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
                     eventCreator.timeStart = time.getTimeInMillis();
+                    eventCreator.updateDatesAndTimes();
                     break;
                 case ACTION_UPDATE_END_TIME:
                     date.setTimeInMillis(eventCreator.timeEnd);
@@ -369,6 +411,8 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     time.set(Calendar.MONTH, date.get(Calendar.MONTH));
                     time.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
                     eventCreator.timeEnd = time.getTimeInMillis();
+                    eventCreator.updateDatesAndTimes();
+                    eventCreator.updateDatesAndTimes();
                     break;
             }
 
