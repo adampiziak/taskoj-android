@@ -8,34 +8,40 @@
         android:background="#F5F5F5"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.Toolbar
+        <FrameLayout
+            android:id="@+id/toolbar_color_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#2196F3"
-            android:elevation="4dp">
-            <LinearLayout
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/act_event_creator_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/act_event_creator_name"
-                    android:layout_width="0dp"
+                android:layout_height="?attr/actionBarSize"
+                android:background="#2196F3"
+                android:elevation="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:inputType="textCapSentences"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                    android:textCursorDrawable="@drawable/white_cursor"
-                    android:hint="Event name"/>
-                <ImageView
-                    android:padding="15dp"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
-                    android:src="@drawable/ic_clear_white_48px" />
-            </LinearLayout>
-        </android.support.v7.widget.Toolbar>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/act_event_creator_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:inputType="textCapSentences"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:textCursorDrawable="@drawable/white_cursor"
+                        android:hint="Event name"/>
+                    <ImageView
+                        android:padding="15dp"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"
+                        android:src="@drawable/ic_clear_white_48px" />
+                </LinearLayout>
+            </android.support.v7.widget.Toolbar>
+        </FrameLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,31 +130,12 @@
             </LinearLayout>
             <View style="@style/Divider" />
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_margin="20dp">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_flag_black_24px"
-                    android:alpha="0.6"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="20dp"
-                    android:text="normal"/>
-            </LinearLayout>
-            <View style="@style/Divider" />
-            <LinearLayout
                 android:id="@+id/act_event_creator_project"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_margin="20dp">
+                android:padding="20dp">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

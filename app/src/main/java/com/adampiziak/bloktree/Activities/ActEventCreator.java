@@ -1,31 +1,43 @@
 package com.adampiziak.bloktree.Activities;
 
+import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.adampiziak.bloktree.Event;
+import com.adampiziak.bloktree.Project;
 import com.adampiziak.bloktree.R;
 import com.adampiziak.bloktree.Tools;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class ActEventCreator extends AppCompatActivity implements View.OnClickListener {
@@ -73,12 +85,19 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
     TextView textRenew;
     EditText eventName;
     FloatingActionButton fab;
+    Toolbar toolbar;
+    FrameLayout toolbarColor;
+
+    //Data
+    List<Project> projects = new ArrayList<>();
 
     //Lifecycle events
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_event_creator);
+
+        syncProjects();
 
         //Get intent extras
         hour = getIntent().getIntExtra("HOUR_OF_DAY", 0);
@@ -106,6 +125,8 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         fab = (FloatingActionButton) findViewById(R.id.act_event_creator_fab);
         fieldRenew = (LinearLayout) findViewById(R.id.act_event_creator_repeat);
         textRenew = (TextView) findViewById(R.id.act_event_creator_repeat_text);
+        toolbar = findViewById(R.id.act_event_creator_toolbar);
+        toolbarColor = findViewById(R.id.toolbar_color_placeholder);
 
         //Set times for timepickers
         actionSelectStartTime.setText(hour + ":00");
@@ -131,6 +152,8 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
         day = c.get(Calendar.DAY_OF_MONTH);
+
+
     }
 
     @Override
@@ -139,8 +162,13 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         if (data != null) {
             switch (requestCode) {
                 case REQUEST_PROJECT:
-                    this.projectKey = data.getStringExtra("PROJECT_KEY");
+                    String projectKeyTemp = data.getStringExtra("PROJECT_KEY");
+                    int tempColor = Color.parseColor(getProject(this.projectKey).getColor());
+                    this.projectKey = projectKeyTemp;
                     this.projectName = data.getStringExtra("PROJECT_NAME");
+                    Project project = getProject(projectKeyTemp);
+                    toolbarColor.setBackgroundColor(tempColor);
+                    setToolBarColor(Color.parseColor(project.getColor()));
                     textProject.setText(Tools.capitalizeSentence(projectName));
                     break;
                 case REQUEST_RENEW_TYPE:
@@ -160,6 +188,18 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
                     break;
             }
         }
+    }
+
+    private void setToolBarColor(final int color) {
+        int cx = toolbar.getWidth() / 2;
+        int cy = toolbar.getHeight() / 2;
+        float finalRadius = (float) Math.hypot(cx, cy);
+        toolbar.setBackgroundColor(Color.BLACK);
+        Animator anim = ViewAnimationUtils.createCircularReveal(toolbar, cx, cy, 0, finalRadius);
+        toolbar.setBackgroundColor(color);
+        anim.start();
+        Window window = getWindow();
+        window.setStatusBarColor(Tools.createDarkerColor(color));
     }
 
     @Override
@@ -338,4 +378,65 @@ public class ActEventCreator extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void syncProjects() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        ref.child("projects").child(auth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Project project = Tools.createProjectFromSnapshot(dataSnapshot);
+                projects.add(project);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Project project = Tools.createProjectFromSnapshot(dataSnapshot);
+                boolean found = false;
+                for (int i = 0; i < projects.size(); i++) {
+                    if (projects.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        projects.set(i, project);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    projects.add(project);
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                for (int i = 0; i < projects.size(); i++) {
+                    if (projects.get(i).getKey().equals(dataSnapshot.getKey())) {
+                        projects.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private Project getProject(String key) {
+        Project project = new Project();
+        for (int i = 0; i < projects.size(); i++) {
+            if (projects.get(i).getKey().equals(key)) {
+                project = projects.get(i);
+                break;
+            }
+        }
+        return project;
+    }
 }
