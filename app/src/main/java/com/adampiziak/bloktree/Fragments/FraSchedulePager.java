@@ -1,7 +1,9 @@
 package com.adampiziak.bloktree.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.adampiziak.bloktree.Activities.ActEventCreator;
 import com.adampiziak.bloktree.Adapters.ScheduleDayAdapter;
 import com.adampiziak.bloktree.R;
 import com.adampiziak.bloktree.Taskoj;
@@ -23,6 +26,8 @@ public class FraSchedulePager extends Fragment {
     int resumeOffset = 0;
     int resumeScrollOffset = 0;
     boolean initialized = false;
+
+    FloatingActionButton actionCreateEvent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,16 @@ public class FraSchedulePager extends Fragment {
         resumeScrollOffset = taskoj.getScrollOffset();
         resumePosition = taskoj.getScheduleViewPagerPosition();
         resumeOffset = taskoj.getDayOffset();
+
+        actionCreateEvent = v.findViewById(R.id.fra_schedule_fab);
+        actionCreateEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ActEventCreator.class);
+                startActivity(intent);
+            }
+        });
+
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
