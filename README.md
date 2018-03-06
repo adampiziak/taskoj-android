@@ -1,4 +1,4 @@
 # taskoj-android
-task scheduler in progress
+task scheduler
 
 ![preview](./preview.gif)
